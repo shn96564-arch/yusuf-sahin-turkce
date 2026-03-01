@@ -4,15 +4,18 @@ import PyPDF2
 # --- SAYFA AYARLARI ---
 st.set_page_config(page_title="Yusuf Efe Şahin | Türkçe Öğreticisi", layout="wide", page_icon="⚡")
 
-# --- PREMIUM TASARIM + PANEL GİZLEME KODU ---
+# --- 🛠️ PANALİ VE TÜM STREAMLIT MENÜLERİNİ KÖKTEN KALDIRMA ---
 st.markdown("""
     <style>
-    /* Sağ alttaki 'Manage app' panelini gizler */
+    /* Sağ alttaki 'Manage app' ve tüm menüleri tamamen yok eder */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
-    stDeployButton {display:none;}
-
+    [data-testid="stStatusWidget"] {visibility: hidden;}
+    .stDeployButton {display:none;}
+    div[data-testid="stToolbar"] {display: none;}
+    
+    /* Arka Plan ve Neon Tasarım */
     .main { background-color: #050505; color: #ffffff; }
     .premium-header {
         text-align: center; padding: 25px;
@@ -28,7 +31,7 @@ st.markdown("""
     }
     .result-card {
         border-left: 5px solid #00ff41; background-color: #111;
-        padding: 20px; border-radius: 10px; margin-top: 15px;
+        padding: 25px; border-radius: 10px; margin-top: 15px;
         box-shadow: 10px 10px 30px rgba(0,0,0,1);
     }
     .signature {
@@ -56,9 +59,9 @@ tum_notlar = pdf_hafizaya_al()
 # --- ANA EKRAN ---
 st.markdown("""
     <div class="premium-header">
-        <p style="color: #d4af37; font-weight: bold; letter-spacing: 3px;">ULTRA SPEED EDITION</p>
+        <p style="color: #d4af37; font-weight: bold; letter-spacing: 3px;">ULTRA PREMIUM EDITION</p>
         <h1 style="font-size: 45px; margin: 0;">TÜRKÇE ÖĞRETİCİSİ</h1>
-        <p style="color: #666;">Geliştirici: <b>Yusuf Efe Şahin</b></p>
+        <p style="color: #888;">Geliştirici: <b>Yusuf Efe Şahin</b></p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -66,7 +69,7 @@ st.markdown("""
 col1, col2, col3 = st.columns([1, 4, 1])
 
 with col2:
-    soru = st.text_input("💎 BİR KONU YAZIN:", placeholder="Örn: Zarflar")
+    soru = st.text_input("💎 ÖĞRENMEK İSTEDİĞİNİZ KONUYU GİRİN:", placeholder="Örn: Zarflar")
     
     if soru:
         soru_low = soru.lower()
@@ -74,17 +77,18 @@ with col2:
         
         if soru_low in metin_low:
             index = metin_low.find(soru_low)
-            # Metni tam buradan başlatıyoruz (noktaları sildik)
-            end = min(len(tum_notlar), index + 1000)
+            # Metni bulduğu kelimenin TAM başından başlatıyoruz (Yarım kelime sorununu çözer)
+            end = min(len(tum_notlar), index + 1200)
             sonuc = tum_notlar[index:end]
             
             st.markdown(f"""
                 <div class="result-card">
-                    <h3 style="color:#00ff41; margin-top:0;">⚡ Analiz Tamamlandı:</h3>
-                    <p style="font-size:19px; line-height:1.6; color:#ccc;">{sonuc}</p>
+                    <h2 style="color:#00ff41; margin-top:0;">⚡ Analiz Tamamlandı:</h2>
+                    <p style="font-size:20px; line-height:1.7; color:#e0e0e0;">{sonuc}</p>
                 </div>
             """, unsafe_allow_html=True)
         else:
-            st.error("❌ Notlar arasında bu konuya rastlanmadı.")
+            st.error("❌ Aradığınız konu notlar arasında bulunamadı.")
 
+# --- İMZA ---
 st.markdown('<div class="signature">yusufefeşahin7d</div>', unsafe_allow_html=True)
