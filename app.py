@@ -3,10 +3,10 @@ import PyPDF2
 import re
 
 # --- SAYFA AYARLARI ---
-st.set_page_config(page_title="Yusuf Şahin | AI Öğretmen", layout="wide")
+st.set_page_config(page_title="7. Sınıf Türkçe Asistanı", layout="wide", page_icon="📖")
 
-# --- GELİŞMİŞ PDF ARAMA MOTORU ---
-def pdf_oku_akilli(aranan_konu):
+# --- PDF'DEN BİLGİ ÇEKME FONKSİYONU ---
+def ders_notu_oku(konu):
     try:
         with open("konu_anlatim.pdf", "rb") as f:
             pdf = PyPDF2.PdfReader(f)
@@ -17,59 +17,71 @@ def pdf_oku_akilli(aranan_konu):
                     tam_metin += metin + "\n"
             
             if not tam_metin.strip():
-                return "⚠️ PDF içi boş veya okunabilir metin içermiyor!"
+                return "Notlarım şu an boş görünüyor, PDF dosyasını kontrol edelim."
 
-            # Küçük harfe çevirip arayalım ki büyük/küçük harf hatası olmasın
-            aranan_konu = aranan_konu.lower()
-            metin_lower = tam_metin.lower()
+            konu_low = konu.lower()
+            metin_low = tam_metin.lower()
 
-            if aranan_konu in metin_lower:
-                # Kelimenin geçtiği yeri bul ve etrafındaki 500 karakteri al
-                baslangic = metin_lower.find(aranan_konu)
-                bitis = baslangic + 800 # Konudan sonraki 800 karakteri getir
+            if konu_low in metin_low:
+                baslangic = metin_lower.find(konu_low)
+                # Konunun geçtiği yerden itibaren 800 karakter al
+                bitis = baslangic + 800 
                 icerik = tam_metin[baslangic:bitis]
                 return icerik
             else:
-                # Bulamazsa PDF'in başından bir parça getir ki hoca "çalışmıyor" demesin
-                return "Aradığın konuyu tam bulamadım ama PDF notlarında şöyle bir bölüm var:\n\n" + tam_metin[:600]
+                return "Aradığın konuyu notlarımda tam bulamadım ama genel bilgilere buradan bakabilirsin:\n\n" + tam_metin[:500]
     except FileNotFoundError:
         return "⚠️ Hata: 'konu_anlatim.pdf' dosyası bulunamadı!"
-    except Exception as e:
-        return f"⚠️ Bir hata oluştu: {e}"
+    except:
+        return "Bir şeyler ters gitti, hemen kontrol ediyorum."
 
-# --- SIDEBAR ---
+# --- YAN MENÜ (ADMİN) ---
 with st.sidebar:
-    st.title("👨‍🏫 Yusuf Hoca")
+    st.title("👨‍🏫 Kontrol Paneli")
     sifre = st.text_input("Şifre:", type="password")
     is_admin = (sifre == "yusufshn072")
+    
+    if is_admin:
+        st.success("Yönetici Girişi Yapıldı!")
+        if st.button("Sohbeti Temizle"):
+            st.session_state.messages = []
+            st.rerun()
 
 # --- ANA EKRAN ---
-st.title("🤖 7. Sınıf Türkçe Akıllı Asistan")
+st.title("🤖 7. Sınıf Türkçe Akıllı Asistanı")
+st.write("---")
 
+# Sohbet Geçmişi
 if "messages" not in st.session_state:
-    st.session_state.messages = [{"role": "assistant", "content": "Selam! PDF notlarını taramaya hazırım. Hangi konuyu soracaksın?"}]
+    st.session_state.messages = [{"role": "assistant", "content": "Selam! Ders notlarını senin için tarıyorum. Hangi konuyu sormak istersin?"}]
 
 for m in st.session_state.messages:
     with st.chat_message(m["role"]):
         st.write(m["content"])
 
-# --- SORU SORMA ---
-if prompt := st.chat_input("Örn: Fiiller, Zarflar..."):
+# --- ÖĞRENCİ SORUSU ---
+if prompt := st.chat_input("Bir konu adı yaz (Örn: Fiiller)"):
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
         st.write(prompt)
 
-    # PDF'DEN CEVABI ÇEK
-    with st.spinner("PDF taranıyor..."):
-        pdf_cevabi = pdf_oku_akilli(prompt)
+    with st.spinner("Hemen notlarıma bakıyorum..."):
+        pdf_bilgisi = ders_notu_oku(prompt)
     
-    tam_cevap = f"### 👨‍🏫 Yusuf Hocanın PDF Notuna Göre:\n\n{pdf_cevabi}"
+    # Gereksiz tüm isimleri sildik, sadece bilgi geliyor
+    cevap = f"### 📖 Ders Notu Bilgisi:\n\n{pdf_bilgisi}\n\n--- \n💡 **Not:** Bu bilgi PDF dosyasından senin için çıkarıldı."
     
-    st.session_state.messages.append({"role": "assistant", "content": tam_cevap})
+    st.session_state.messages.append({"role": "assistant", "content": cevap})
     with st.chat_message("assistant"):
-        st.write(tam_cevap)
+        st.write(cevap)
 
-# --- VİDEO ---
+# --- VİDEO BÖLÜMÜ ---
 if is_admin:
     st.divider()
-    st.video("turkce_ders.mp4")
+    st.subheader("📺 Özel Anlatım")
+    try:
+        st.video("turkce_ders.mp4")
+    except:
+        st.info("Video dosyası yüklendiğinde burada görünecek.")
+
+st.caption("Yusuf Şahin Akademisi | 2026")
