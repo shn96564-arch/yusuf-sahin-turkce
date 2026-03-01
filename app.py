@@ -2,11 +2,17 @@ import streamlit as st
 import PyPDF2
 
 # --- SAYFA AYARLARI ---
-st.set_page_config(page_title="Yusuf Efe Şahin | Hızlı Öğretici", layout="wide", page_icon="⚡")
+st.set_page_config(page_title="Yusuf Efe Şahin | Türkçe Öğreticisi", layout="wide", page_icon="⚡")
 
-# --- PREMIUM TASARIM (SİYAH & ALTIN & NEON) ---
+# --- PREMIUM TASARIM + PANEL GİZLEME KODU ---
 st.markdown("""
     <style>
+    /* Sağ alttaki 'Manage app' panelini gizler */
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    header {visibility: hidden;}
+    stDeployButton {display:none;}
+
     .main { background-color: #050505; color: #ffffff; }
     .premium-header {
         text-align: center; padding: 25px;
@@ -32,8 +38,8 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# --- 🚀 IŞIK HIZI PDF YÜKLEME (HAFIZAYA ALMA) ---
-@st.cache_data # Bu komut sayesinde PDF sadece 1 kere okunur, sonra hep hafızadan gelir!
+# --- PDF HAFIZAYA ALMA ---
+@st.cache_data
 def pdf_hafizaya_al():
     try:
         with open("konu_anlatim.pdf", "rb") as f:
@@ -45,7 +51,6 @@ def pdf_hafizaya_al():
             return tam_metin
     except: return "HATA: PDF Bulunamadı!"
 
-# Notları site açılırken hafızaya yükle
 tum_notlar = pdf_hafizaya_al()
 
 # --- ANA EKRAN ---
@@ -61,27 +66,25 @@ st.markdown("""
 col1, col2, col3 = st.columns([1, 4, 1])
 
 with col2:
-    soru = st.text_input("💎 BİR KONU YAZIN (Salisesinde Cevap Verir):", placeholder="Örn: Fiiller")
+    soru = st.text_input("💎 BİR KONU YAZIN:", placeholder="Örn: Zarflar")
     
     if soru:
-        # Arama işlemi hafızadaki metin üzerinden yapıldığı için ANINDA sonuç verir
         soru_low = soru.lower()
         metin_low = tum_notlar.lower()
         
         if soru_low in metin_low:
             index = metin_low.find(soru_low)
-            start = max(0, index - 100)
+            # Metni tam buradan başlatıyoruz (noktaları sildik)
             end = min(len(tum_notlar), index + 1000)
-            sonuc = tum_notlar[start:end]
+            sonuc = tum_notlar[index:end]
             
             st.markdown(f"""
                 <div class="result-card">
                     <h3 style="color:#00ff41; margin-top:0;">⚡ Analiz Tamamlandı:</h3>
-                    <p style="font-size:19px; line-height:1.6; color:#ccc;">...{sonuc}...</p>
+                    <p style="font-size:19px; line-height:1.6; color:#ccc;">{sonuc}</p>
                 </div>
             """, unsafe_allow_html=True)
         else:
             st.error("❌ Notlar arasında bu konuya rastlanmadı.")
 
-# --- ALT NEON İMZA ---
 st.markdown('<div class="signature">yusufefeşahin7d</div>', unsafe_allow_html=True)
