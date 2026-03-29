@@ -1,100 +1,95 @@
 import streamlit as st
+import google.generativeai as genai
 
-# --- SAYFA AYARLARI ---
-st.set_page_config(page_title="Yusuf Efe Şahin | Akıllı Tahta", layout="wide")
+# --- 🤫 GİZLİ ZEKA MOTORU BAĞLANTISI ---
+# Senin verdiğin API Key'i buraya çaktım hocam
+API_KEY = "AIzaSyDKvrSv9Ev9eJoNkCcMYt7TU0Pre7bzZDk" 
+genai.configure(api_key=API_KEY)
+model = genai.GenerativeModel('gemini-pro')
 
-# --- 🎨 ARKA TEMA VE NEON CSS (Burada temayı hallediyoruz) ---
+# --- 🎨 SİBER MİNİMALİST TASARIM (Full Siyah & Neon) ---
+st.set_page_config(page_title="Yusuf Efe | Zeka Paneli", layout="wide")
+
 st.markdown("""
     <style>
-    /* Arka Planı Simsiyah ve Matrix Havasında Yapıyoruz */
-    .main { 
-        background-color: #000000; 
-        background-image: radial-gradient(#111 1px, transparent 1px);
-        background-size: 20px 20px;
+    /* Arka Plan Simsiyah */
+    .main { background-color: #000000; color: #ffffff; }
+    
+    /* Giriş Kutusu (Input) Tasarımı */
+    .stTextInput>div>div>input {
+        background-color: #050505 !important; 
+        color: #00ff41 !important;
+        border: 2px solid #d4af37 !important; 
+        border-radius: 12px; 
+        font-size: 22px;
+        padding: 15px;
     }
     
-    /* Üst Panel: Altın Sarısı Neon */
-    .smart-header {
-        text-align: center; padding: 30px;
-        background: rgba(20, 20, 20, 0.9);
-        border: 3px solid #d4af37; border-radius: 25px;
-        box-shadow: 0 0 40px rgba(212, 175, 55, 0.4);
-        margin-bottom: 40px;
+    /* Cevap Kartı: Neon Yeşil Çerçeveli */
+    .ai-response {
+        background: rgba(15, 15, 15, 0.9);
+        border: 2px solid #00ff41;
+        padding: 30px;
+        border-radius: 20px;
+        box-shadow: 0 0 30px rgba(0, 255, 65, 0.2);
+        margin-top: 30px;
+        font-size: 22px;
+        line-height: 1.6;
+        color: #eee;
     }
 
-    /* Ders Notu Kartları: Neon Yeşil */
-    .note-card {
-        background: rgba(0, 0, 0, 0.8);
-        border-left: 10px solid #00ff41;
-        padding: 25px; border-radius: 15px;
-        margin-bottom: 20px;
-        box-shadow: 5px 5px 20px rgba(0, 255, 65, 0.1);
-        transition: 0.3s;
-    }
-    .note-card:hover {
-        transform: scale(1.02);
-        box-shadow: 0 0 30px rgba(0, 255, 65, 0.3);
-    }
-
-    /* İmza Alanı */
-    .neon-signature {
-        text-align: center; color: #ff00ff; 
-        font-size: 45px; font-weight: bold;
-        text-shadow: 0 0 15px #ff00ff, 0 0 30px #ff00ff;
-        margin-top: 50px; font-family: 'Courier New', Courier, monospace;
-    }
-
-    /* Buton Tasarımı */
-    .stButton>button {
-        background: linear-gradient(45deg, #00ff41, #008000) !important;
-        color: black !important; font-weight: bold !important;
-        border-radius: 50px !important; border: none !important;
-        height: 50px !important; width: 100% !important;
+    /* Alt İmza */
+    .footer-name {
+        text-align: center;
+        color: #ff00ff;
+        font-size: 40px;
+        font-weight: bold;
+        text-shadow: 0 0 20px #ff00ff;
+        margin-top: 80px;
     }
     </style>
     """, unsafe_allow_html=True)
 
-# --- ANA TAHTA BAŞLIĞI ---
+# --- PANEL ÜST BAŞLIĞI ---
 st.markdown("""
-    <div class="smart-header">
-        <h1 style="color: white; font-size: 50px; margin:0;">🚀 AKILLI TÜRKÇE TAHTASI</h1>
-        <p style="color: #d4af37; font-size: 20px; font-weight: bold; letter-spacing: 3px;">7/D SINIFI - DİJİTAL EĞİTİM PANELİ</p>
+    <div style='text-align:center; padding:25px; border-bottom:1px solid #333;'>
+        <h1 style='color:#d4af37; font-size:50px; margin:0;'>7. SINIF TÜRKÇE ANALİZÖRÜ</h1>
+        <p style='color:#888; letter-spacing:4px;'>MOTOR DURUMU: <span style='color:#00ff41;'>AKTİF & BAĞLI</span></p>
     </div>
-    """, unsafe_allow_html=True)
+""", unsafe_allow_html=True)
 
-# --- AKILLI TAHTA İÇERİĞİ ---
-col1, col2 = st.columns([1, 1])
+# --- 🧠 ZEKAYI KULLANMA ALANI ---
+st.write("")
+st.markdown("<h3 style='color:#00ff41;'>🔍 Bir cümle veya konu yazın:</h3>", unsafe_allow_html=True)
+soru = st.text_input("", placeholder="Örn: 'Hızlıca içeri girdi' cümlesindeki zarfı bul.")
 
-with col1:
-    st.markdown("""
-    <div class="note-card">
-        <h2 style="color: #00ff41;">⚡ ZARFLAR (BELİRTEÇLER)</h2>
-        <p style="font-size: 20px;">Fiilleri durum, zaman, miktar ve yer-yön bakımından tamamlayan kelimelerdir.</p>
-        <p><b>Durum:</b> Nasıl? (Hızlı geldi)<br><b>Zaman:</b> Ne zaman? (Dün gitti)</p>
-    </div>
-    <div class="note-card">
-        <h2 style="color: #00ff41;">📖 SÖZCÜKTE ANLAM</h2>
-        <p style="font-size: 20px;"><b>Gerçek:</b> Akla gelen ilk anlam.<br><b>Mecaz:</b> Gerçekten kopan yeni anlam.</p>
-    </div>
-    """, unsafe_allow_html=True)
+if soru:
+    with st.spinner("Yusuf Efe Motoru Analiz Ediyor..."):
+        try:
+            # Gemini'ye gizli talimat: 7. sınıf seviyesinde, kısa ve öz anlat
+            gizli_talimat = f"Sen bir Türkçe öğretmenisin. 7. sınıf öğrencisine anlatır gibi şu soruyu kısa, maddeler halinde ve net cevapla: {soru}"
+            response = model.generate_content(gizli_talimat)
+            
+            # Cevabı şık bir kutuda gösteriyoruz
+            st.markdown(f"""
+                <div class='ai-response'>
+                    <h3 style='color:#d4af37; margin-top:0;'>⚡ SİSTEM ANALİZİ:</h3>
+                    {response.text.replace("\n", "<br>")}
+                </div>
+            """, unsafe_allow_html=True)
+        except Exception as e:
+            st.error(f"⚠️ Hata oluştu! API Key geçersiz veya bağlantı sorunu var.")
 
-with col2:
-    st.markdown("""
-    <div class="note-card">
-        <h2 style="color: #00ff41;">⚙️ FİİLLERDE KİP</h2>
-        <p style="font-size: 20px;"><b>Haber:</b> Zaman bildirir (-yor, -ecek, -di).<br><b>Dilek:</b> İstek bildirir (-meli, -se, -e).</p>
-    </div>
-    <div class="note-card">
-        <h2 style="color: #00ff41;">💡 PRATİK ÖRNEKLER</h2>
-        <p style="font-size: 18px; color: #aaa;">"Araba <b>çok</b> yavaş gidiyordu."<br>Çok = Miktar Zarfı<br>Yavaş = Durum Zarfı</p>
-    </div>
-    """, unsafe_allow_html=True)
-
-# --- İNTERAKTİF BÖLÜM ---
+# --- 📊 MÜFREDAT LİSTESİ ---
 st.write("---")
-if st.button("🔄 TAHTAYI TEMİZLE VE GÜNCELLE"):
-    st.balloons()
-    st.success("Tahta Yusuf Efe Şahin tarafından başarıyla güncellendi!")
+with st.expander("📂 7. Sınıf Müfredat Kapsamını Gör"):
+    st.write("""
+    - Sözcükte Anlam (Gerçek, Mecaz, Terim)
+    - Cümlede Anlam (Öznel, Nesnel, Neden-Sonuç)
+    - Fiiller (Haber ve Dilek Kipleri)
+    - Zarflar (Durum, Zaman, Miktar, Yer-Yön)
+    - Yazım Kuralları & Noktalama İşaretleri
+    """)
 
-# --- 🌟 FİNAL İMZASI ---
-st.markdown('<div class="neon-signature">yusufefeşahin7d</div>', unsafe_allow_html=True)
+# --- 🌟 NEON İMZASI ---
+st.markdown("<div class='footer-name'>yusufefeşahin7d</div>", unsafe_allow_html=True)
