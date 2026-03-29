@@ -1,99 +1,107 @@
 import streamlit as st
-import PyPDF2
-import re
 
 # --- SAYFA AYARLARI ---
-st.set_page_config(page_title="Yusuf Efe Şahin | Türkçe Öğreticisi", layout="wide", page_icon="📚")
+st.set_page_config(page_title="Yusuf Efe Şahin | Türkçe Dijital Asistan", layout="wide")
 
-# --- ELITE TASARIM (PANEL AKTİF) ---
+# --- 🎨 ÖZEL NEON TASARIM ---
 st.markdown("""
     <style>
     .main { background-color: #050505; color: #ffffff; }
     .premium-header {
-        text-align: center; padding: 30px;
+        text-align: center; padding: 25px;
         background: linear-gradient(145deg, #111, #000);
-        border: 2px solid #d4af37; border-radius: 20px;
-        box-shadow: 0 0 30px rgba(212, 175, 55, 0.4);
-        margin-bottom: 25px;
+        border: 2px solid #00ff41; border-radius: 20px;
+        box-shadow: 0 0 30px rgba(0, 255, 65, 0.3);
+        margin-bottom: 20px;
     }
-    .stTextInput>div>div>input {
-        border: 2px solid #00ff41 !important;
-        background-color: #000 !important; color: #00ff41 !important;
-        font-size: 20px !important; border-radius: 12px;
+    .neon-footer {
+        text-align: center; font-size: 50px; font-weight: bold;
+        color: #fff; text-shadow: 0 0 10px #00ff41, 0 0 20px #00ff41, 0 0 40px #00ff41;
+        margin-top: 50px; letter-spacing: 5px;
     }
-    .result-card {
-        border-left: 5px solid #00ff41; background-color: #111;
-        padding: 25px; border-radius: 15px; margin-top: 15px;
-        box-shadow: 10px 10px 30px rgba(0,0,0,1);
-    }
-    .signature {
-        text-align: center; color: #ff00ff; font-size: 30px;
-        font-weight: bold; text-shadow: 0 0 15px #ff00ff; margin-top: 40px;
+    .stButton>button {
+        background: linear-gradient(90deg, #d4af37, #f1c40f) !important;
+        color: black !important; font-weight: bold !important;
+        border-radius: 12px !important; width: 100% !important; height: 50px;
     }
     </style>
     """, unsafe_allow_html=True)
 
-# --- 🔍 HATASIZ METİN TEMİZLEME MOTORU ---
-@st.cache_data
-def pdf_temiz_oku():
-    try:
-        with open("konu_anlatim.pdf", "rb") as f:
-            pdf = PyPDF2.PdfReader(f)
-            metin = ""
-            for sayfa in pdf.pages:
-                sayfa_metni = sayfa.extract_text()
-                if sayfa_metni:
-                    # PDF hatalarını (kelime arasına giren tek tük harfleri) temizler
-                    sayfa_metni = re.sub(r'(?<=[a-z])\s?d\s?(?=[a-z])', '', sayfa_metni) 
-                    metin += sayfa_metni + " "
-            
-            # Gereksiz boşlukları ve satır sonu bozukluklarını düzelt
-            metin = re.sub(r'\s+', ' ', metin)
-            return metin
-    except:
-        return "HATA: PDF dosyası bulunamadı."
-
-tum_icerik = pdf_temiz_oku()
-
-# --- ANA EKRAN ---
+# --- ÜST PANEL ---
 st.markdown("""
     <div class="premium-header">
-        <p style="color: #d4af37; font-weight: bold; letter-spacing: 2px;">ELITE PREMIUM EDITION</p>
-        <h1 style="font-size: 45px; margin: 0; color: white;">TÜRKÇE ÖĞRETİCİSİ</h1>
-        <p style="color: #888;">Geliştirici: <b>Yusuf Efe Şahin</b></p>
+        <p style="color: #00ff41; font-weight: bold; letter-spacing: 3px;">7. SINIF TÜRKÇE PROJESİ</p>
+        <h1 style="font-size: 45px; margin: 0; color: white;">DİJİTAL KONU ANLATIM SİSTEMİ</h1>
+        <p style="color: #d4af37;">Geliştirici: Yusuf Efe Şahin</p>
     </div>
     """, unsafe_allow_html=True)
 
-# --- ARAMA ALANI ---
-c1, c2, c3 = st.columns([1, 4, 1])
+# --- 🖊️ CANLI NEON ÇİZİM (ZARFLAR ŞEMASI) ---
+st.markdown("### 🖥️ Akıllı Tahta Görünümü")
 
-with c2:
-    soru = st.text_input("📚 KONU ARA (Örn: Zarflar):", placeholder="Buraya yazın...")
+# Canlı çizim efektli HTML/JS
+drawing_html = """
+<div style="text-align:center;">
+    <canvas id="canvas" width="800" height="450" style="background:#000; border:1px solid #333; border-radius:15px;"></canvas>
+</div>
+<script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const green = "#00ff41";
+    const gold = "#d4af37";
+
+    function drawLine(x1, y1, x2, y2, color, delay) {
+        setTimeout(() => {
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 3;
+            ctx.shadowBlur = 15;
+            ctx.shadowColor = color;
+            ctx.beginPath();
+            ctx.moveTo(x1, y1);
+            ctx.lineTo(x2, y2);
+            ctx.stroke();
+        }, delay);
+    }
+
+    function drawText(txt, x, y, color, delay) {
+        setTimeout(() => {
+            ctx.fillStyle = color;
+            ctx.font = "bold 24px Arial";
+            ctx.shadowBlur = 5;
+            ctx.fillText(txt, x, y);
+        }, delay);
+    }
+
+    // Çizim Başlıyor
+    drawText("ZARFLAR", 350, 50, gold, 500);
+    drawLine(400, 60, 400, 150, green, 1000); // Ana direk
     
-    if soru:
-        soru_low = soru.lower().strip()
-        icerik_low = tum_icerik.lower()
-        
-        if soru_low in icerik_low:
-            idx = icerik_low.find(soru_low)
-            
-            # 🎯 CÜMLE BAŞI BULUCU: "ÖN" gibi yarım başlangıçları engeller
-            bas = idx
-            while bas > 0 and tum_icerik[bas-1] not in ".!?":
-                bas -= 1
-            
-            sonuc = tum_icerik[bas:bas+1200].strip()
-            
-            # Başlangıçtaki anlamsız karakterleri (varsa) temizle
-            sonuc = re.sub(r'^[^A-ZÇĞİÖŞÜa-zçğıöşü]+', '', sonuc)
-            
-            st.markdown(f"""
-                <div class="result-card">
-                    <h2 style="color:#00ff41; margin-top:0;">⚡ Analiz Sonucu:</h2>
-                    <p style="font-size:20px; line-height:1.8; color:#eee;">{sonuc}</p>
-                </div>
-            """, unsafe_allow_html=True)
-        else:
-            st.error("❌ Aradığınız konu notlar arasında bulunamadı.")
+    // Dallar
+    drawLine(400, 150, 150, 250, green, 1500); // Durum
+    drawLine(400, 150, 400, 250, green, 2000); // Zaman
+    drawLine(400, 150, 650, 250, green, 2500); // Miktar
 
-st.markdown('<div class="signature">yusufefeşahin7d</div>', unsafe_allow_html=True)
+    // Yazılar
+    drawText("Durum Zarfı", 80, 280, "#fff", 3000);
+    drawText("Zaman Zarfı", 330, 280, "#fff", 3500);
+    drawText("Miktar Zarfı", 580, 280, "#fff", 4000);
+    
+    drawText("(Nasıl?)", 110, 310, gold, 4500);
+    drawText("(Ne zaman?)", 340, 310, gold, 5000);
+    drawText("(Ne kadar?)", 590, 310, gold, 5500);
+</script>
+"""
+st.components.v1.html(drawing_html, height=480)
+
+# --- İNTERAKTİF BUTONLAR ---
+st.write("---")
+c1, c2 = st.columns(2)
+with c1:
+    if st.button("🔄 ÇİZİMİ TEKRARLAT"):
+        st.rerun()
+with c2:
+    if st.button("🎯 ÖRNEK SORU GÖSTER"):
+        st.info("**Soru:** 'Öğrenciler sessizce bekliyor.' cümlesinde zarf hangisidir?\n\n**Cevap:** Sessizce (Durum Zarfı)")
+
+# --- 🌟 NEON İMZA ---
+st.markdown('<div class="neon-footer">YUSUF EFE ŞAHİN</div>', unsafe_allow_html=True)
